@@ -1,27 +1,113 @@
-<!DOCTYPE html>
-<html>
+<<!DOCTYPE html>
+<html lang="en">
 <head>
-  <title>Simple Tic Tac Toe</title>
+  <meta charset="UTF-8" />
+  <title>Tic Tac Toe</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f0f0f0;
+      margin-top: 40px;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    #status {
+      margin-bottom: 20px;
+      font-size: 1.2em;
+    }
+    #board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-gap: 5px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .cell {
+      width: 100px;
+      height: 100px;
+      font-size: 2em;
+      background: white;
+      border: 2px solid #444;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    #restart {
+      padding: 10px 20px;
+      font-size: 1em;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-  <h1>Tic Tac Toe (X and O)</h1>
-  <table border="1" cellspacing="0" cellpadding="20">
-    <tr>
-      <td>X</td>
-      <td>O</td>
-      <td>X</td>
-    </tr>
-    <tr>
-      <td>O</td>
-      <td>X</td>
-      <td>O</td>
-    </tr>
-    <tr>
-      <td>X</td>
-      <td>O</td>
-      <td>X</td>
-    </tr>
-  </table>
-  <p>Made By Rishi Chauhan.</p>
+  <h1>X and O Game</h1>
+  <div id="status">Player X's turn</div>
+  <div id="board"></div>
+  <button id="restart">Restart</button>
+
+  <script>
+    const board = document.getElementById('board');
+    const status = document.getElementById('status');
+    const restart = document.getElementById('restart');
+
+    let currentPlayer = 'X';
+    let cells = Array(9).fill('');
+    let gameActive = true;
+
+    function createBoard() {
+      board.innerHTML = '';
+      for (let i = 0; i < 9; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.dataset.index = i;
+        cell.addEventListener('click', handleMove);
+        board.appendChild(cell);
+      }
+    }
+
+    function handleMove(e) {
+      const index = e.target.dataset.index;
+      if (!gameActive || cells[index]) return;
+
+      cells[index] = currentPlayer;
+      e.target.textContent = currentPlayer;
+
+      if (checkWinner()) {
+        status.textContent = `Player ${currentPlayer} wins!`;
+        gameActive = false;
+      } else if (!cells.includes('')) {
+        status.textContent = "It's a draw!";
+        gameActive = false;
+      } else {
+        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+        status.textContent = `Player ${currentPlayer}'s turn`;
+      }
+    }
+
+    function checkWinner() {
+      const winPatterns = [
+        [0,1,2], [3,4,5], [6,7,8], // rows
+        [0,3,6], [1,4,7], [2,5,8], // cols
+        [0,4,8], [2,4,6]           // diagonals
+      ];
+      return winPatterns.some(pattern => {
+        const [a, b, c] = pattern;
+        return cells[a] && cells[a] === cells[b] && cells[b] === cells[c];
+      });
+    }
+
+    restart.addEventListener('click', () => {
+      currentPlayer = 'X';
+      cells = Array(9).fill('');
+      gameActive = true;
+      status.textContent = "Player X's turn";
+      createBoard();
+    });
+
+    createBoard();
+  </script>
 </body>
 </html>
